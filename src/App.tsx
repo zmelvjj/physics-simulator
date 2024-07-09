@@ -1,19 +1,23 @@
 import React, { useRef, useEffect } from "react";
 import Workspace from "./workspace";
 import Matter from "matter-js";
+import SetSelectObj from "./selectOrMove";
+import ResizeObject, { isResizeing } from "./ObjectResizeEvent";
 
 export let setEngine: Matter.Engine;
+export let render: Matter.Render;
+export let allObjectList:Matter.Body[] = [];
 
 const App: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
+  useEffect(() => { 
     const Engine = Matter.Engine;
     const Render = Matter.Render;
     const World = Matter.World;
     const Bodies = Matter.Bodies;
     setEngine = Engine.create();
-    let render = Render.create({
+    render = Render.create({
       canvas: canvasRef.current as HTMLCanvasElement,
       engine: setEngine,
       options: {
@@ -21,6 +25,7 @@ const App: React.FC = () => {
         height: window.innerHeight,
         wireframes: false,
         background: "white",
+        showSleeping: false,
       },
     });
 
@@ -53,7 +58,27 @@ const App: React.FC = () => {
       { isStatic: true, render: { fillStyle: "white" } },
     );
 
-    World.add(setEngine.world, [ground, topWall, leftWall, rightWall]);
+    const mouse = Matter.Mouse.create(render.canvas);
+    const constraint = Matter.MouseConstraint.create(setEngine, {mouse:mouse,collisionFilter: {mask:0}, constraint: {render: { visible: false }}})
+
+
+    //마우스 클릭 오브잭트 선택 처리
+    Matter.Events.on(constraint,"mousedown",event=>{
+      if (!isResizeing){
+        const foundBodies:Matter.Body[] = Matter.Query.point(allObjectList,constraint.mouse.position)
+
+        if (foundBodies.length > 0){
+          const selectObj = foundBodies[Math.floor(Math.random() * foundBodies.length)]
+          SetSelectObj(selectObj)
+        } else {
+          SetSelectObj(null)
+        }
+      }
+    })
+
+    //오브잭트, 월드에 추가
+    World.add(setEngine.world, [ground, topWall, leftWall, rightWall, constraint]);
+
     Render.run(render);
     const runner = Matter.Runner.create();
     Matter.Runner.run(runner, setEngine);
@@ -63,6 +88,7 @@ const App: React.FC = () => {
     <div>
       <canvas ref={canvasRef}></canvas>
       <Workspace />
+      <ResizeObject />
     </div>
   );
 };

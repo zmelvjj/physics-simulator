@@ -2,33 +2,36 @@ import React, { useRef } from "react";
 import { setEngine } from "../App";
 import Matter from "matter-js";
 import "../style.css";
+import SetSelectObj from "../selectOrMove";
+import { mousePos } from "../addState/mousePos";
+import { allObjectList } from "../App";
 
 interface prop {
     top:number
 }
+let newTarget:Matter.Body
 
 const Floor:React.FC<prop> = ({top})=>{
-    let targetObject = useRef<null | Matter.Body>(null).current;
+    //let targetObject = useRef<null | Matter.Body>(null).current;
 
-    const MouseDown = (pos:any)=>{
-        const newTarget = Matter.Bodies.rectangle(pos.clientX,pos.clientY,50,50,{ isStatic:true })
-        Matter.World.add(setEngine.world,newTarget)
-        targetObject = newTarget;
-        console.log("aaa")
+    const MouseDown = ()=>{
+        newTarget = Matter.Bodies.rectangle(mousePos.x,mousePos.y,50,50,{ isSleeping:true, render:{ fillStyle:"gray", strokeStyle:"black" } });
+        newTarget.render.opacity = 1;
+        allObjectList.push(newTarget)
+        Matter.World.add(setEngine.world,newTarget);
+        SetSelectObj(newTarget)
     }
-
-    window.addEventListener("mousemove", (pos)=>{
-        if (targetObject){
-           Matter.Body.setPosition(targetObject,{x:pos.clientX,y:pos.clientY})
-        }
-    })
+    // window.addEventListener("mousemove", ()=>{
+    //     if (targetObject){
+    //        Matter.Body.setPosition(targetObject,{x:mousePos.x,y:mousePos.y});
+    //     }
+    // })
     
-    window.addEventListener("mouseup", ()=>{
-        if (targetObject){
-            targetObject = null;
-            console.log(targetObject)
-        }
-    })
+    // window.addEventListener("mouseup", ()=>{
+    //     if (targetObject){
+    //         targetObject = null;
+    //     }
+    // }) 
 
     return(
       <div>

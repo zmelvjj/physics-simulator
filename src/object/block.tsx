@@ -1,33 +1,36 @@
 import React, { useState } from "react";
 import "../style.css";
 import Matter, { Body } from "matter-js";
-import { setEngine } from "../App"
+import { setEngine, allObjectList } from "../App"
+import { mousePos } from "../addState/mousePos";
 
 interface Top {
   top: number;
 }
 
 let isState = false;
+let isOver = false
 
-window.addEventListener("mousedown",(pos)=>{
-  if (isState) {
-    const newObj = Matter.Bodies.rectangle(pos.clientX,pos.clientY,50,50)
-    Matter.World.add(setEngine.world,newObj);
+window.addEventListener("mousedown",()=>{
+  if (isState && !isOver) {
+    const newObj = Matter.Bodies.rectangle(mousePos.x,mousePos.y,50,50,{render:{strokeStyle:"black"}});
+    newObj.collisionFilter.category = 1
+    Matter.World.add(setEngine.world,[newObj]);
+    allObjectList.push(newObj);
   }
 })
 
 const Muon: React.FC<Top> = ({ top }) => {
   const onClick = () => {
-    console.log("abc")
-    if (!isState) isState = true;
-    else isState = false
+    if (isState) isState = false;
+    else isState = true
   };
 
   let style = {top: top + "vh"};
 
   return (
     <div>
-      <div className="object" style={style} onClick={onClick}>블록</div></div>
+      <div className="object" style={style} onMouseDown={onClick} onMouseOver={() => isOver=true} onMouseLeave={()=>isOver=false}>블록</div></div>
   );
 };
 
