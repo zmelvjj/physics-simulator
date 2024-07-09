@@ -39,3 +39,10 @@
     align-items: center;
     user-select: none;
 }
+
+#hitbox {
+    position: absolute;
+    opacity: 1;
+    width: 8px;
+    background-color: blue;
+}
