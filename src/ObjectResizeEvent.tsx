@@ -34,11 +34,11 @@ window.addEventListener("mousemove",()=>{
         if (selectHitbox.direction == "rightX" || selectHitbox.direction == "leftX") {
             const translateXPos = selectHitbox.undoOffset + mousePos.x;
             const unX = (selectHitbox.direction == "rightX" ? elementRef.current["leftX"] : elementRef.current["rightX"]).getBoundingClientRect()
-            const newX = unX.left + (mousePos.x - unX.left)/2;
+            const newX = (mousePos.x - unX.left);
             console.log(newX)
-            selectHitbox.el.style.transform = `translateX(${newX*2}px)` // translate형식으로 변경 현제(newX) 고정좌표
+            selectHitbox.el.style.transform = `translateX(${newX}px)` // translate형식으로 변경 현제(newX) 고정좌표
             
-            Matter.Body.setPosition(selectObject,{x:newX,y:selectObject.position.y})
+            Matter.Body.setPosition(selectObject,{x:newX/2,y:selectObject.position.y})
             
         } 
         else {
