@@ -11,6 +11,7 @@ window.addEventListener("mouseup",()=>{
     undateObjectState()
     console.log(objectState)
     ResizeingObjectWorkPos()
+    
 })
 window.addEventListener("mousedown",()=>{
     if (!selectObject && ResizeingObject.current){
