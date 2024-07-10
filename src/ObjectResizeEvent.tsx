@@ -3,6 +3,7 @@ import { selectObject, objectState, undateObjectState } from "./selectOrMove";
 import "./style.css";
 import Matter from "matter-js";
 import interact from "interactjs";
+import { mousePos } from "./addState/mousePos";
 
 export let isResizeing:Boolean = false; //외부기능 정지용
 let ResizeingObject:RefObject<HTMLDivElement>
@@ -11,13 +12,26 @@ window.addEventListener("mouseup",()=>{
     undateObjectState()
     console.log(objectState)
     ResizeingObjectWorkPos()
-    
+
 })
 window.addEventListener("mousedown",()=>{
     if (!selectObject && ResizeingObject.current){
         ResizeingObject.current.style.top = 99999+'px'
         ResizeingObject.current.style.width = 0+'px'
         ResizeingObject.current.style.height = 0+'px'
+    }
+})
+
+let isRotate:boolean = false
+window.addEventListener("keydown",(key)=>{
+    if (key.code == "KeyR"){
+        isRotate = !isRotate
+    }
+})
+
+window.addEventListener("mousemove",()=>{
+    if (isRotate && selectObject && ResizeingObject.current){
+        const rotate = Math.atan2(mousePos.y-selectObject.position.y,mousePos.x-selectObject.position.x)
     }
 })
 
@@ -34,7 +48,7 @@ const Resize:React.FC = ()=>{
     ResizeingObject = useRef<HTMLDivElement>(null)
     useEffect(()=>{ // rerenber됨은 selectObject값이 변경됨
 
-        interact('.resizable-rotatable')
+        interact('.resizable')
             .resizable({
                 edges: { left: true, right: true, bottom: true, top: true },
                 listeners:{
@@ -47,7 +61,7 @@ const Resize:React.FC = ()=>{
                         outer: 'parent',
                     }),
                     interact.modifiers.restrictSize({
-                        min: { width: 0, height: 0 },
+                        min: { width: 25, height: 25 },
                     }),
                 ],
                 inertia: false,
@@ -69,7 +83,7 @@ const Resize:React.FC = ()=>{
                     ]);
                 }
             });
-        interact('.resizable-rotatable')
+        interact('.resizable')
             .draggable({
               inertia: false,
               listeners: {
@@ -95,32 +109,11 @@ const Resize:React.FC = ()=>{
                 },
               },
             });
-        interact('.resizable-rotatable')
-            .gesturable({
-              listeners: {
-                move(event) {
-                  const target = event.target;
-                  const angle = (parseFloat(target.getAttribute('data-angle')) || 0) + event.da;
-      
-                  // Rotate the element
-                  target.style.transform = `translate(${target.getAttribute('data-x')}px, ${target.getAttribute('data-y')}px) rotate(${angle}deg)`;
-      
-                  // Update the rotation attribute
-                  target.setAttribute('data-angle', angle.toString());
-      
-                  // Update Matter.js body angle
-                  if (selectObject) {
-                    Matter.Body.setAngle(selectObject, angle*Math.PI/180);
-                  }
-                },
-              },
-            });
-
-
-
     })
 
-    return <div className="resizable-rotatable" style={{
+    
+
+    return <div className="resizable" style={{
         position: 'absolute',
         width: '50px',
         height: '50px',
