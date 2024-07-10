@@ -12,7 +12,7 @@
 }
 
 .door {
-    position: absolute;
+    position: absolute; 
     width: 3vh;
     height: 15vh;
     left: 39vh;

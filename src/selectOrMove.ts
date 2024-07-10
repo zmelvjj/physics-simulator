@@ -1,7 +1,6 @@
 import Matter from "matter-js";
 import React from "react";
 import { mousePos } from "./addState/mousePos";
-import ResizeObject, { Reranders } from "./ObjectResizeEvent";
 
 let MoveSelectObj:Matter.Body | null
 
@@ -41,6 +40,17 @@ window.addEventListener('mouseup', () => {
     
 });
 
+export const undateObjectState = ()=>{
+    if (selectObject){
+        console.log("vvv")
+        objectState = {
+            Angle: selectObject.angle*180/Math.PI,
+            width: selectObject.bounds.max.x - selectObject.bounds.min.x,
+            height: selectObject.bounds.max.y - selectObject.bounds.min.y
+        }
+    }
+}
+
 const SetSelectObj = (obj:Matter.Body | null)=>{
     if (obj !== selectObject && obj || !obj) {
         if (selectObject) selectObject.render.lineWidth = 0;
@@ -48,17 +58,9 @@ const SetSelectObj = (obj:Matter.Body | null)=>{
         selectObject = obj;
     }
 
-    if (obj){
-        objectState = {
-            Angle: obj.angle*180/Math.PI,
-            width: obj.bounds.max.x - obj.bounds.min.x,
-            height: obj.bounds.max.y - obj.bounds.min.y
-        }
-    }
-
     MoveSelectObj = obj;
+    undateObjectState()
     onClick()
-    Reranders()
 }
 
 export default SetSelectObj;
