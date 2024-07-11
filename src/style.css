@@ -46,3 +46,22 @@
   width: 8px;
   background-color: blue;
 }
+
+#img {
+  position: absolute;
+  width: 10vh;
+  height: 10vh;
+  top: 90vh;
+  left: 190vh;
+
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,12 +1,12 @@
-import { allObjectList } from "./App";
 import Matter from "matter-js";
+import { setEngine } from "./App";
 
 export let isRunningSimulator: Boolean = false;
 window.addEventListener("keydown", (key) => {
-  if (key.code == "Space" && allObjectList && !isRunningSimulator) {
+  if (key.code == "Space" && setEngine.world.bodies && !isRunningSimulator) {
     console.log("StartRunuing!!");
     isRunningSimulator = true;
-    allObjectList.forEach((object) => {
+    setEngine.world.bodies.forEach((object) => {
       if (object.label == "workBox") {
         Matter.Sleeping.set(object, false);
       }
@@ -14,8 +14,8 @@ window.addEventListener("keydown", (key) => {
   } else if (key.code == "Escape" && isRunningSimulator) {
     console.log("StopRunning!!");
     isRunningSimulator = false;
-    if (allObjectList) {
-      allObjectList.forEach((object) => {
+    if (setEngine.world.bodies) {
+      setEngine.world.bodies.forEach((object) => {
         if (object.label == "workBox") {
           Matter.Sleeping.set(object, true);
         }
@@ -23,3 +23,5 @@ window.addEventListener("keydown", (key) => {
     }
   }
 });
+
+

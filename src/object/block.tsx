@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../style.css";
 import Matter, { Body } from "matter-js";
-import { setEngine, allObjectList } from "../App";
+import { setEngine } from "../App";
 import { mousePos } from "../addState/mousePos";
 import { isRunningSimulator } from "../run-simulator";
 import { isDrage } from "../addState/mouseState";
@@ -26,7 +26,6 @@ window.addEventListener("mousedown", () => {
       frictionStatic: inertial.frictionStatic,
     });
     Matter.World.add(setEngine.world, [newObj]);
-    allObjectList.push(newObj);
   } else if (PartyMode) {
     root();
   }
@@ -40,7 +39,7 @@ window.addEventListener("keydown", (key) => {
     PartyMode = true;
   } else if (PartyMode && !isRunningSimulator) {
     PartyMode = false;
-    allObjectList.forEach((object) => {
+    setEngine.world.bodies.forEach((object) => {
       if (object.label == "PartyBox") {
         Matter.World.remove(setEngine.world, object);
       }
@@ -53,15 +52,14 @@ const root = () => {
     const newObj = Matter.Bodies.rectangle(
       mousePos.x,
       mousePos.y,
-      Math.floor(Math.random() * 50),
-      Math.floor(Math.random() * 50),
+      Math.floor(Math.random() * 50)+25,
+      Math.floor(Math.random() * 50)+25,
       {
         label: "PartyBox",
       },
     );
     Matter.World.add(setEngine.world, [newObj]);
-    allObjectList.push(newObj);
-    setTimeout(root, 10);
+    setTimeout(root, 50);
   }
 };
 

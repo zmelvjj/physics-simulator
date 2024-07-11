@@ -12,13 +12,15 @@ window.addEventListener("mouseup", () => {
   undateObjectState();
   ResizeingObjectWorkPos();
 });
-window.addEventListener("mousedown", () => {
-  if (!selectObject && ResizeingObject.current) {
-    ResizeingObject.current.style.top = 99999 + "px";
-    ResizeingObject.current.style.width = 0 + "px";
-    ResizeingObject.current.style.height = 0 + "px";
-  }
-});
+
+export const selectResizeingObject = ()=>{
+    if (!selectObject && ResizeingObject.current) {
+        ResizeingObject.current.style.display = "none"
+        ResizeingObject.current.style.width = 0 + "px";
+        ResizeingObject.current.style.height = 0 + "px";
+      }
+}
+window.addEventListener("mousedown", () => {setTimeout(selectResizeingObject,50)});
 
 let isRotate: boolean = false;
 window.addEventListener("keydown", (key) => {
@@ -40,16 +42,19 @@ window.addEventListener("mousemove", () => {
 
 const ResizeingObjectWorkPos = () => {
   if (selectObject && ResizeingObject.current && objectState) {
+    ResizeingObject.current.style.display = "block"
+    ResizeingObject.current.style.transform = ""
     ResizeingObject.current.style.left =
-      selectObject.position.x - objectState.width / 2 - 5 + "px";
+      selectObject.position.x - objectState.width / 2 + "px";
     ResizeingObject.current.style.top =
-      selectObject.position.y - objectState.height / 2 - 5 + "px";
-    ResizeingObject.current.style.transform = `rotate(${objectState.Angle}deg)`;
-    ResizeingObject.current.style.width = objectState.width + 10 + "px";
-    ResizeingObject.current.style.height = objectState.height + 10 + "px";
+      selectObject.position.y - objectState.height / 2 + "px";
+    ResizeingObject.current.style.width = objectState.width + "px";
+    ResizeingObject.current.style.height = objectState.height + "px";
   }
 };
 
+let undoPos:{x:number, y:number} = {x:0,y:0}
+let translateOffsetPos:{top:number,left:number} = {top:0,left:0}
 const Resize: React.FC = () => {
   ResizeingObject = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -59,9 +64,60 @@ const Resize: React.FC = () => {
       .resizable({
         edges: { left: true, right: true, bottom: true, top: true },
         listeners: {
-          move(evnet) {
-            ResizeingObjectWorkPos();
-          },
+          move(event) {
+            // const target = event.target;
+            // const rect = event.rect;
+            // const deltaRect = event.deltaRect;
+            // const offset = {x:mousePos.x-parseFloat(target.style.left), y:mousePos.y-parseFloat(target.style.top)}
+
+            // // left, top 방향 조절
+            // let x = parseFloat(target.getAttribute('data-x')) || 0;
+            // let y = parseFloat(target.getAttribute('data-y')) || 0;
+            
+
+            // if (!x || !y){
+            //     x = target.style.left
+            //     y = target.style.top
+            //     console.log(offset)
+            //     target.setAttribute("data-x", x.toString());
+            //     target.setAttribute("data-y", y.toString());
+                
+            // }
+
+            
+
+            // // 크기 조절
+            // target.style.width = `${rect.width}px`;
+            // target.style.height = `${rect.height}px`;
+
+            // // dataset 업데이트
+            // target.setAttribute('data-x', x + deltaRect.left);
+            // target.setAttribute('data-y', y + deltaRect.top);
+
+            // target.style.left = `${x + deltaRect.left}px`;
+            // target.style.top = `${y + deltaRect.top}px`;
+
+            // translateOffsetPos = {
+            //     top: edge.top !== 0 ? offsetPos.y : 0,
+            //     left: edge.left !== 0 ? offsetPos.x : 0
+            // };
+            
+
+            // if (translateOffsetPos.left !== 0 || translateOffsetPos.top !== 0){
+            //     console.log(translateOffsetPos)
+            //     event.target.style.transfrom = `translate(${translateOffsetPos.top*2}px, ${translateOffsetPos.left*2}px)`
+            // }
+
+            if (selectObject && ResizeingObject.current){
+                const rorect = ResizeingObject.current.getBoundingClientRect()
+                Matter.Body.setPosition(selectObject, {
+                    x:rorect.left+rorect.width/2,
+                    y:rorect.top+rorect.height/2
+                })
+            }
+            
+            undoPos = {x:mousePos.x,y:mousePos.y}
+          },    
         },
         modifiers: [
           interact.modifiers.restrictEdges({
@@ -114,8 +170,6 @@ const Resize: React.FC = () => {
           target.style.transform = `translate(${x}px, ${y}px) rotate(${target.getAttribute("data-angle")}deg)`;
 
           // Update the position attributes
-          target.setAttribute("data-x", x.toString());
-          target.setAttribute("data-y", y.toString());
 
           // Update Matter.js body position
           if (selectObject) {
@@ -138,7 +192,6 @@ const Resize: React.FC = () => {
         height: "50px",
         backgroundColor: "blue",
         opacity: 0,
-        border: "1px solid #ddd",
         cursor: "none",
       }}
       ref={ResizeingObject}

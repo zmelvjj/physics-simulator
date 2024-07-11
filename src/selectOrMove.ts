@@ -2,6 +2,7 @@ import Matter, { World } from "matter-js";
 import React from "react";
 import { mousePos } from "./addState/mousePos";
 import { setEngine } from "./App";
+import { selectResizeingObject } from "./ObjectResizeEvent";
 
 let MoveSelectObj: Matter.Body | null;
 
@@ -55,6 +56,10 @@ export const undateObjectState = () => {
 window.addEventListener("keydown", (key) => {
   if (key.code == "KeyD" && selectObject) {
     World.remove(setEngine.world, selectObject);
+    console.log(setEngine.world)
+    selectObject = null
+
+    selectResizeingObject()
   }
 });
 

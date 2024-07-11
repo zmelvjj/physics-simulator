@@ -4,7 +4,6 @@ import Matter from "matter-js";
 import "../style.css";
 import SetSelectObj from "../selectOrMove";
 import { mousePos } from "../addState/mousePos";
-import { allObjectList } from "../App";
 
 interface prop {
   top: number;
@@ -21,7 +20,6 @@ const Floor: React.FC<prop> = ({ top }) => {
       render: { fillStyle: "gray", strokeStyle: "black" },
     });
     newTarget.render.opacity = 1;
-    allObjectList.push(newTarget);
     Matter.World.add(setEngine.world, newTarget);
     SetSelectObj(newTarget);
   };
