@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/physics-simulator/static/css/main.e887d350.css",
+    "main.js": "/physics-simulator/static/js/main.afed2649.js",
+    "static/js/453.ed3810f9.chunk.js": "/physics-simulator/static/js/453.ed3810f9.chunk.js",
+    "static/media/setting.png": "/physics-simulator/static/media/setting.49ef6802937541d14890.png",
+    "index.html": "/physics-simulator/index.html",
+    "main.e887d350.css.map": "/physics-simulator/static/css/main.e887d350.css.map",
+    "main.afed2649.js.map": "/physics-simulator/static/js/main.afed2649.js.map",
+    "453.ed3810f9.chunk.js.map": "/physics-simulator/static/js/453.ed3810f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e887d350.css",
+    "static/js/main.afed2649.js"
+  ]
+}
