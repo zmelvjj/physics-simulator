@@ -1,48 +1,48 @@
 .block {
-    position: absolute;
-    width: 39vh;
-    height: 95vh;
-    left: 0vh;
-    top: 50vh;
-    background-color: rgba(0, 0, 0, 0.158);
-    transform: translate(-50%, -50%);
-    border-radius: 3vh;
-    border: 0.5vh solid rgb(117, 117, 117);
-    transition: all 0.5s;
+  position: absolute;
+  width: 39vh;
+  height: 95vh;
+  left: 0vh;
+  top: 50vh;
+  background-color: rgba(0, 0, 0, 0.158);
+  transform: translate(-50%, -50%);
+  border-radius: 3vh;
+  border: 0.5vh solid rgb(117, 117, 117);
+  transition: all 0.5s;
 }
 
 .door {
-    position: absolute; 
-    width: 3vh;
-    height: 15vh;
-    left: 39vh;
-    top: 10vh;
-    background-color: rgb(117, 117, 117);
-    transform: translate(0%,-50%);
-    border-top-right-radius: 1vh;
-    border-bottom-right-radius: 1vh;
+  position: absolute;
+  width: 3vh;
+  height: 15vh;
+  left: 39vh;
+  top: 10vh;
+  background-color: rgb(117, 117, 117);
+  transform: translate(0%, -50%);
+  border-top-right-radius: 1vh;
+  border-bottom-right-radius: 1vh;
 }
 
 .object {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    position: absolute;
-    color: white;
-    width: 17vh;
-    height: 4vh;
-    left: 29.25vh;
-    top: 0vh;
-    background-color: rgb(117, 117, 117);
-    transform: translate(-50%,-50%);
-    border-radius: 1vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  position: absolute;
+  color: white;
+  width: 17vh;
+  height: 4vh;
+  left: 29.25vh;
+  top: 0vh;
+  background-color: rgb(117, 117, 117);
+  transform: translate(-50%, -50%);
+  border-radius: 1vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
 }
 
 #hitbox {
-    position: absolute;
-    opacity: 1;
-    width: 8px;
-    background-color: blue;
+  position: absolute;
+  opacity: 1;
+  width: 8px;
+  background-color: blue;
 }

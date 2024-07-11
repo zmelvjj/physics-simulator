@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-import "../style.css";
-import Matter, { Body } from "matter-js";
-import { setEngine, allObjectList } from "../App";
+import React from "react";
+import Matter from "matter-js";
 import { mousePos } from "../addState/mousePos";
 import { isRunningSimulator } from "../run-simulator";
+import { setEngine, allObjectList } from "../App";
+import "../style.css";
 import { isDrage } from "../addState/mouseState";
 import { inertial } from "../addState/CreatedObjectStyle";
-
-interface Top {
-  top: number;
-}
 
 let isState = false;
 let isOver = false;
@@ -17,7 +13,7 @@ let isOver = false;
 window.addEventListener("mousedown", () => {
   if (isState && !isOver) {
     PartyMode = false;
-    const newObj = Matter.Bodies.rectangle(mousePos.x, mousePos.y, 50, 50, {
+    const newObj = Matter.Bodies.circle(mousePos.x, mousePos.y, 50, {
       render: { strokeStyle: "black" },
       isSleeping: isRunningSimulator ? false : true,
       label: "workBox",
@@ -50,10 +46,9 @@ window.addEventListener("keydown", (key) => {
 
 const root = () => {
   if (isDrage) {
-    const newObj = Matter.Bodies.rectangle(
+    const newObj = Matter.Bodies.circle(
       mousePos.x,
       mousePos.y,
-      Math.floor(Math.random() * 50),
       Math.floor(Math.random() * 50),
       {
         label: "PartyBox",
@@ -65,14 +60,14 @@ const root = () => {
   }
 };
 
-const Block: React.FC<Top> = ({ top }) => {
-  const onClick = () => {
-    if (isState) isState = false;
-    else isState = true;
-  };
+const onClick = () => (isState = !isState);
 
+interface prop {
+  top: number;
+}
+
+const newCircle: React.FC<prop> = ({ top }) => {
   let style = { top: top + "vh" };
-
   return (
     <div>
       <div
@@ -82,10 +77,10 @@ const Block: React.FC<Top> = ({ top }) => {
         onMouseOver={() => (isOver = true)}
         onMouseLeave={() => (isOver = false)}
       >
-        rectangle블록
+        Circle블록
       </div>
     </div>
   );
 };
 
-export default Block;
+export default newCircle;

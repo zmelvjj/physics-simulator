@@ -1,137 +1,154 @@
-import React, {useEffect, useRef, RefObject } from "react";
+import React, { useEffect, useRef, RefObject } from "react";
 import { selectObject, objectState, undateObjectState } from "./selectOrMove";
 import "./style.css";
 import Matter from "matter-js";
 import interact from "interactjs";
 import { mousePos } from "./addState/mousePos";
 
-export let isResizeing:Boolean = false; //외부기능 정지용
-let ResizeingObject:RefObject<HTMLDivElement>
+export let isResizeing: Boolean = false; //외부기능 정지용
+let ResizeingObject: RefObject<HTMLDivElement>;
 
-window.addEventListener("mouseup",()=>{
-    undateObjectState()
-    console.log(objectState)
-    ResizeingObjectWorkPos()
+window.addEventListener("mouseup", () => {
+  undateObjectState();
+  ResizeingObjectWorkPos();
+});
+window.addEventListener("mousedown", () => {
+  if (!selectObject && ResizeingObject.current) {
+    ResizeingObject.current.style.top = 99999 + "px";
+    ResizeingObject.current.style.width = 0 + "px";
+    ResizeingObject.current.style.height = 0 + "px";
+  }
+});
 
-})
-window.addEventListener("mousedown",()=>{
-    if (!selectObject && ResizeingObject.current){
-        ResizeingObject.current.style.top = 99999+'px'
-        ResizeingObject.current.style.width = 0+'px'
-        ResizeingObject.current.style.height = 0+'px'
-    }
-})
+let isRotate: boolean = false;
+window.addEventListener("keydown", (key) => {
+  if (key.code == "KeyR") {
+    isRotate = !isRotate;
+    ResizeingObjectWorkPos();
+  }
+});
 
-let isRotate:boolean = false
-window.addEventListener("keydown",(key)=>{
-    if (key.code == "KeyR"){
-        isRotate = !isRotate
-    }
-})
+window.addEventListener("mousemove", () => {
+  if (isRotate && selectObject && ResizeingObject.current) {
+    const rotate = Math.atan2(
+      mousePos.y - selectObject.position.y,
+      mousePos.x - selectObject.position.x,
+    );
+    Matter.Body.setAngle(selectObject, rotate);
+  }
+});
 
-window.addEventListener("mousemove",()=>{
-    if (isRotate && selectObject && ResizeingObject.current){
-        const rotate = Math.atan2(mousePos.y-selectObject.position.y,mousePos.x-selectObject.position.x)
-    }
-})
+const ResizeingObjectWorkPos = () => {
+  if (selectObject && ResizeingObject.current && objectState) {
+    ResizeingObject.current.style.left =
+      selectObject.position.x - objectState.width / 2 - 5 + "px";
+    ResizeingObject.current.style.top =
+      selectObject.position.y - objectState.height / 2 - 5 + "px";
+    ResizeingObject.current.style.transform = `rotate(${objectState.Angle}deg)`;
+    ResizeingObject.current.style.width = objectState.width + 10 + "px";
+    ResizeingObject.current.style.height = objectState.height + 10 + "px";
+  }
+};
 
-const ResizeingObjectWorkPos = ()=>{
-    if (selectObject && ResizeingObject.current && objectState){
-        ResizeingObject.current.style.left = selectObject.position.x - objectState.width/2-5 + 'px'
-        ResizeingObject.current.style.top = selectObject.position.y - objectState.height/2-5 + 'px'
-        ResizeingObject.current.style.width = objectState.width + 10 + 'px'
-        ResizeingObject.current.style.height = objectState.height + 10 + 'px'
-    }
-}
+const Resize: React.FC = () => {
+  ResizeingObject = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // rerenber됨은 selectObject값이 변경됨
 
-const Resize:React.FC = ()=>{
-    ResizeingObject = useRef<HTMLDivElement>(null)
-    useEffect(()=>{ // rerenber됨은 selectObject값이 변경됨
+    interact(".resizable")
+      .resizable({
+        edges: { left: true, right: true, bottom: true, top: true },
+        listeners: {
+          move(evnet) {
+            ResizeingObjectWorkPos();
+          },
+        },
+        modifiers: [
+          interact.modifiers.restrictEdges({
+            outer: "parent",
+          }),
+          interact.modifiers.restrictSize({
+            min: { width: 25, height: 25 },
+          }),
+        ],
+        inertia: false,
+      })
+      .on("resizemove", (event) => {
+        const target = event.target;
+        const { width, height } = event.rect;
+        // Update element size
+        target.style.width = `${width}px`;
+        target.style.height = `${height}px`;
 
-        interact('.resizable')
-            .resizable({
-                edges: { left: true, right: true, bottom: true, top: true },
-                listeners:{
-                    move(evnet) {
-                        ResizeingObjectWorkPos()
-                    }
-                },
-                modifiers: [
-                    interact.modifiers.restrictEdges({
-                        outer: 'parent',
-                    }),
-                    interact.modifiers.restrictSize({
-                        min: { width: 25, height: 25 },
-                    }),
-                ],
-                inertia: false,
-            })
-            .on('resizemove', event => {
-                const target = event.target;
-                const { width, height } = event.rect;
-                // Update element size
-                target.style.width = `${width}px`;
-                target.style.height = `${height}px`;
+        // Update Matter.js body
+        if (selectObject) {
+          Matter.Body.setVertices(selectObject, [
+            {
+              x: selectObject.position.x - width / 2,
+              y: selectObject.position.y - height / 2,
+            },
+            {
+              x: selectObject.position.x + width / 2,
+              y: selectObject.position.y - height / 2,
+            },
+            {
+              x: selectObject.position.x + width / 2,
+              y: selectObject.position.y + height / 2,
+            },
+            {
+              x: selectObject.position.x - width / 2,
+              y: selectObject.position.y + height / 2,
+            },
+          ]);
+        }
+      });
+    interact(".resizable").draggable({
+      inertia: false,
+      listeners: {
+        move(event) {
+          const target = event.target;
+          const x = (parseFloat(target.getAttribute("data-x")) || 0) + event.dx;
+          const y = (parseFloat(target.getAttribute("data-y")) || 0) + event.dy;
 
-                // Update Matter.js body
-                if (selectObject){
-                    Matter.Body.setVertices(selectObject, [
-                        { x: selectObject.position.x - width / 2, y: selectObject.position.y - height / 2 },
-                        { x: selectObject.position.x + width / 2, y: selectObject.position.y - height / 2 },
-                        { x: selectObject.position.x + width / 2, y: selectObject.position.y + height / 2 },
-                        { x: selectObject.position.x - width / 2, y: selectObject.position.y + height / 2 },
-                    ]);
-                }
+          // Translate the element
+          target.style.transform = `translate(${x}px, ${y}px) rotate(${target.getAttribute("data-angle")}deg)`;
+
+          // Update the position attributes
+          target.setAttribute("data-x", x.toString());
+          target.setAttribute("data-y", y.toString());
+
+          // Update Matter.js body position
+          if (selectObject) {
+            Matter.Body.setPosition(selectObject, {
+              x: selectObject.position.x + event.dx,
+              y: selectObject.position.y + event.dy,
             });
-        interact('.resizable')
-            .draggable({
-              inertia: false,
-              listeners: {
-                move(event) {
-                  const target = event.target;
-                  const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                  const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-      
-                  // Translate the element
-                  target.style.transform = `translate(${x}px, ${y}px) rotate(${target.getAttribute('data-angle')}deg)`;
-      
-                  // Update the position attributes
-                  target.setAttribute('data-x', x.toString());
-                  target.setAttribute('data-y', y.toString());
-      
-                  // Update Matter.js body position
-                  if (selectObject) {
-                    Matter.Body.setPosition(selectObject, {
-                      x: selectObject.position.x + event.dx,
-                      y: selectObject.position.y + event.dy,
-                    });
-                  }
-                },
-              },
-            });
-    })
+          }
+        },
+      },
+    });
+  });
 
-    
-
-    return <div className="resizable" style={{
-        position: 'absolute',
-        width: '50px',
-        height: '50px',
-        backgroundColor: 'blue',
+  return (
+    <div
+      className="resizable"
+      style={{
+        position: "absolute",
+        width: "50px",
+        height: "50px",
+        backgroundColor: "blue",
         opacity: 0,
-        border: '1px solid #ddd',
-        cursor: 'none',
-      }} ref={ResizeingObject}
-      onMouseEnter={()=>isResizeing=true}
-      onMouseLeave={()=>isResizeing=false}></div>
-}
+        border: "1px solid #ddd",
+        cursor: "none",
+      }}
+      ref={ResizeingObject}
+      onMouseEnter={() => (isResizeing = true)}
+      onMouseLeave={() => (isResizeing = false)}
+    ></div>
+  );
+};
 
-export default Resize
-
-
-
-
-
+export default Resize;
 
 // let UpdateUI : () => void;
 // let newUI:ReactElement | null;
@@ -160,10 +177,10 @@ export default Resize
 //     if (selectHitbox && isDrage && selectObject && objectState){
 //         if (selectHitbox.direction == "rightX" || selectHitbox.direction == "leftX") {
 //             // const unX = (selectHitbox.direction == "rightX" ? elementRef.current["leftX"] : elementRef.current["rightX"]).getBoundingClientRect();
-            
+
 //             // // 마우스의 상대 좌표로 이동량을 계산
 //             // const deltaX = mousePos.x - selectHitbox.el.getBoundingClientRect().left;
-            
+
 //             // // 막대의 이동량을 그대로 반영
 //             // const newX = unX.left + deltaX;
 //             // console.log(newX);
@@ -176,13 +193,13 @@ export default Resize
 //             // // 새로운 translateX 값 계산
 //             // const newTranslateX = currentTranslateX + deltaX;
 //             // const newTransform = currentTransform.replace(/translateX\([^)]+\)/, `translateX(${newTranslateX}px)`) || `${currentTransform} translateX(${newTranslateX}px)`;
-            
+
 //             // // transform 속성 설정
 //             // selectHitbox.el.style.transform = newTransform;
 
 //             // // Matter.js 객체 위치 설정
 //             // Matter.Body.setPosition(selectObject, { x: newX, y: selectObject.position.y });
-//         } 
+//         }
 //         else {
 //             const undoPos = selectHitbox.hitBloxPos;
 //             const redAngle = objectState.Angle*Math.PI/180
@@ -199,7 +216,7 @@ export default Resize
 //             const delta = Math.sqrt(deltaX**2+deltaY**2)
 //             selectHitbox.el.style.transform = `${currentTransform} translateX(${delta * (deltaY-deltaX <= 0 ? -1 : 1)}px)`
 //             console.log(deltaY <= 0 ? -1 : 1)
-            
+
 //             Matter.Body.translate(selectObject,{y:deltaY/2,x:deltaX/2})
 
 //             selectHitbox.hitBloxPos = {
@@ -247,14 +264,12 @@ export default Resize
 //     // }
 // })
 
-
 // //디버스 스틱
 // window.addEventListener("keydown",(key)=>{
 //     if (selectObject && key.code == "KeyR") {
 //         Matter.Body.rotate(selectObject,45)
 //     }
 // })
-
 
 // export const Reranders = () => {
 //     if (selectObject && objectState) {
