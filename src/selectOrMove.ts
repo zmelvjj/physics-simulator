@@ -8,27 +8,30 @@ let MoveSelectObj: Matter.Body | null;
 
 export let selectObject: Matter.Body | null = null;
 export let objectState: { Angle: number; width: number; height: number } | null;
+export let selectEventlistener:Function[] = [];
 let mouseOffset: { x: number; y: number };
 
 let selectMoveIs = false;
-let corruten;
+let corruten:any;
 
-const onClick = () => {
+export const MoveIsDrage = () => {
   selectMoveIs = true;
-  if (MoveSelectObj)
+  if (selectObject){
     mouseOffset = {
-      x: mousePos.x - MoveSelectObj.position.x,
-      y: mousePos.y - MoveSelectObj.position.y,
+      x: mousePos.x - selectObject.position.x,
+      y: mousePos.y - selectObject.position.y,
     };
-  corruten = window.setInterval(() => {
-    isDrage();
-  }, 100);
+    corruten = window.setInterval(() => {
+      isDrage();
+    }, 10);
+  }
 };
 
 const isDrage = () => {
-  if (MoveSelectObj && selectMoveIs) {
-    MoveSelectObj.isStatic = true;
-    Matter.Body.setPosition(MoveSelectObj, {
+  if (selectObject && selectMoveIs) {
+
+    selectObject.isStatic = true;
+    Matter.Body.setPosition(selectObject, {
       x: mousePos.x - mouseOffset.x,
       y: mousePos.y - mouseOffset.y,
     });
@@ -36,7 +39,7 @@ const isDrage = () => {
 };
 
 window.addEventListener("mouseup", () => {
-  selectMoveIs = false;
+  clearInterval(corruten)
   if (MoveSelectObj) {
     MoveSelectObj.isStatic = false;
     MoveSelectObj = null;
@@ -56,7 +59,6 @@ export const undateObjectState = () => {
 window.addEventListener("keydown", (key) => {
   if (key.code == "KeyD" && selectObject) {
     World.remove(setEngine.world, selectObject);
-    console.log(setEngine.world)
     selectObject = null
 
     selectResizeingObject()
@@ -70,9 +72,12 @@ const SetSelectObj = (obj: Matter.Body | null) => {
     selectObject = obj;
   }
 
+  selectEventlistener.forEach(f=>f())
+
+  clearInterval(corruten)
   MoveSelectObj = obj;
   undateObjectState();
-  onClick();
+  MoveIsDrage();
 };
 
 export default SetSelectObj;

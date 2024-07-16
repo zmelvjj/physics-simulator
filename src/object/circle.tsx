@@ -20,6 +20,7 @@ window.addEventListener("mousedown", () => {
       friction: inertial.friction,
       frictionAir: inertial.frictionAir,
       frictionStatic: inertial.frictionStatic,
+      restitution: 1,
     });
     Matter.World.add(setEngine.world, [newObj]);
   } else if (PartyMode) {
@@ -48,7 +49,7 @@ const root = () => {
     const newObj = Matter.Bodies.circle(
       mousePos.x,
       mousePos.y,
-      Math.floor(Math.random() * 50)+25,
+      Math.floor(Math.random() * 50) + 25,
       {
         label: "PartyBox",
       },
