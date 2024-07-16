@@ -42,7 +42,10 @@ const Setting = () => {
   const onClick = () => {
     console.log("354345");
     setIsSetting((prevIsSetting) => !prevIsSetting);
+    console.log("354345");
+    setIsSetting((prevIsSetting) => !prevIsSetting);
     if (SettingScreenRef.current) {
+      SettingScreenRef.current.style.display = isSetting ? "none" : "block";
       SettingScreenRef.current.style.display = isSetting ? "none" : "block";
     }
   };
@@ -100,6 +103,7 @@ const Setting = () => {
         }}
       >
         <div style={{ position: "absolute", borderRadius: "1vh" }}>
+        <div style={{ position: "absolute", borderRadius: "1vh" }}>
           <div>
             {Interface(setFriction, 1, friction, "마찰력")}
             {Interface(setFrictionAir, 6, frictionAir, "공기저항")}
@@ -134,3 +138,4 @@ const Setting = () => {
 };
 
 export default Setting;
+
