@@ -100,9 +100,7 @@ const Setting = () => {
           transition: "opacity 0.5s",
           borderRadius: "2vh",
           border: "thick double black",
-        }}
-      >
-        <div style={{ position: "absolute", borderRadius: "1vh" }}>
+        }}>
         <div style={{ position: "absolute", borderRadius: "1vh" }}>
           <div>
             {Interface(setFriction, 1, friction, "마찰력")}
